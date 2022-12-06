@@ -1,19 +1,34 @@
-import { ReactNode } from "react";
+import { forwardRef, ReactNode } from "react";
 
 interface Props<T extends number = number> {
   value: T;
 }
-export default function PlayingCard<T extends number = number>({
-  value,
-}: Props<T>) {
+
+const PlayingCard = forwardRef<HTMLDivElement, Props>(({ value }, ref) => {
   return (
-    <div className="flex h-64 w-48 flex-col justify-between rounded-md border border-black bg-gradient-to-br from-orange-500 via-orange-400 to-orange-500">
+    <div
+      ref={ref}
+      className="flex h-64 w-48 flex-col justify-between rounded-md border border-black bg-gradient-to-br from-orange-500 via-orange-400 to-orange-500"
+    >
       <TopCornerValues value={value} />
       <div className="flex justify-center text-8xl">{value}</div>
       <BottomCornerValues value={value} />
     </div>
   );
-}
+});
+
+export default PlayingCard;
+// export default function PlayingCard<T extends number = number>({
+//   value,
+// }: Props<T>) {
+//   return (
+//     <div className="flex h-64 w-48 flex-col justify-between rounded-md border border-black bg-gradient-to-br from-orange-500 via-orange-400 to-orange-500">
+//       <TopCornerValues value={value} />
+//       <div className="flex justify-center text-8xl">{value}</div>
+//       <BottomCornerValues value={value} />
+//     </div>
+//   );
+// }
 
 function TopCornerValues({ value }: Props) {
   return (

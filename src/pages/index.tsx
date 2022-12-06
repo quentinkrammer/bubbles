@@ -3,11 +3,10 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { trpc } from "../utils/trpc";
-import PlayingCard from "../../components/PlayingCard/PlayingCard";
-import { BaseProps } from "../types/baseProps";
-import classNames from "classnames";
 import { css } from "goober";
 import { motion } from "framer-motion";
+import { forwardRef, LegacyRef, MutableRefObject, useRef } from "react";
+import PlayingCard from "../components/PlayingCard/PlayingCard";
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
@@ -36,16 +35,16 @@ interface Props {
   cards: Array<Parameters<typeof PlayingCard>[0]>;
 }
 function Hand({ cards, ...otherProps }: Props) {
+  const playingField = useRef<HTMLDivElement | null>(null);
+
+  console.log("playingField", playingField.current);
+
+  const x = playingField ? playingField.current?.offsetLeft : 300;
+  const y = playingField ? playingField.current?.offsetTop : 300;
+  console.log({ x, y });
   return (
     <>
-      <div
-        className="h-48 w-48"
-        onDrop={(e) => {
-          console.log("Drop: ", e);
-        }}
-      >
-        {"Foo Bar"}
-      </div>
+      <div className="h-48 w-48"></div>
       <div {...otherProps} className={styles.hand}>
         {cards.map((card, index) => (
           <motion.div
@@ -54,6 +53,9 @@ function Hand({ cards, ...otherProps }: Props) {
             whileHover={{
               translateY: -24,
             }}
+            initial={{ opacity: 0, x: 0, y: 448 / 2 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 2 }}
             drag
             dragSnapToOrigin
             onDrop={(e) => console.log(e)}
@@ -63,9 +65,19 @@ function Hand({ cards, ...otherProps }: Props) {
           </motion.div>
         ))}
       </div>
+      <PlayingField ref={playingField} />
     </>
   );
 }
+
+interface PlayingFieldProps {}
+const PlayingField = forwardRef<HTMLDivElement, PlayingFieldProps>(
+  (PlayingFieldProps, ref) => {
+    return (
+      <div ref={ref} className="h-64 w-48 rounded-md border border-white"></div>
+    );
+  }
+);
 
 const styles = {
   hand: css({ display: "flex" }),

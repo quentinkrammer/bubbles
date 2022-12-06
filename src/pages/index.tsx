@@ -3,6 +3,11 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { trpc } from "../utils/trpc";
+import PlayingCard from "../../components/PlayingCard/PlayingCard";
+import { BaseProps } from "../types/baseProps";
+import classNames from "classnames";
+import { css } from "goober";
+import { motion } from "framer-motion";
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
@@ -18,14 +23,54 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="">
-        <div className="min-h-screen bg-[url('/space-bg.webp')] bg-cover bg-no-repeat"></div>
+        <div className="min-h-screen bg-[url('/space-bg.webp')] bg-cover bg-no-repeat">
+          <Hand cards={[{ value: 1 }, { value: 2 }, { value: 3 }]} />
+        </div>
       </main>
     </>
   );
 };
 
 export default Home;
+interface Props {
+  cards: Array<Parameters<typeof PlayingCard>[0]>;
+}
+function Hand({ cards, ...otherProps }: Props) {
+  return (
+    <>
+      <div
+        className="h-48 w-48"
+        onDrop={(e) => {
+          console.log("Drop: ", e);
+        }}
+      >
+        {"Foo Bar"}
+      </div>
+      <div {...otherProps} className={styles.hand}>
+        {cards.map((card, index) => (
+          <motion.div
+            key={index}
+            className={styles.card}
+            whileHover={{
+              translateY: -24,
+            }}
+            drag
+            dragSnapToOrigin
+            onDrop={(e) => console.log(e)}
+            onDragEnd={(e) => console.log(e)}
+          >
+            <PlayingCard value={card.value} />
+          </motion.div>
+        ))}
+      </div>
+    </>
+  );
+}
 
+const styles = {
+  hand: css({ display: "flex" }),
+  card: css({}),
+};
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
 

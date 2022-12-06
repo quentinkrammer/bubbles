@@ -1,7 +1,11 @@
-interface Props {
-  value: number;
+import { ReactNode } from "react";
+
+interface Props<T extends number = number> {
+  value: T;
 }
-export default function Card({ value }: Props) {
+export default function PlayingCard<T extends number = number>({
+  value,
+}: Props<T>) {
   return (
     <div className="flex h-64 w-48 flex-col justify-between rounded-md border border-black bg-gradient-to-br from-orange-500 via-orange-400 to-orange-500">
       <TopCornerValues value={value} />

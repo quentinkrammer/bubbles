@@ -7,6 +7,7 @@ import { css } from "goober";
 import { motion } from "framer-motion";
 import { forwardRef, LegacyRef, MutableRefObject, useRef } from "react";
 import PlayingCard from "../components/PlayingCard/PlayingCard";
+import PlayingField from "../components/PlayingField/PlayingField";
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
@@ -59,7 +60,8 @@ function Hand({ cards, ...otherProps }: Props) {
             drag
             dragSnapToOrigin
             onDrop={(e) => console.log(e)}
-            onDragEnd={(e) => console.log(e)}
+            onDragEnd={(e) => console.log(e)} // dispatch action to remove card from hand
+            // add onExit animation to hover onto middle pile
           >
             <PlayingCard value={card.value} />
           </motion.div>
@@ -69,15 +71,6 @@ function Hand({ cards, ...otherProps }: Props) {
     </>
   );
 }
-
-interface PlayingFieldProps {}
-const PlayingField = forwardRef<HTMLDivElement, PlayingFieldProps>(
-  (PlayingFieldProps, ref) => {
-    return (
-      <div ref={ref} className="h-64 w-48 rounded-md border border-white"></div>
-    );
-  }
-);
 
 const styles = {
   hand: css({ display: "flex" }),

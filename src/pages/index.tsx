@@ -6,51 +6,10 @@ import { trpc } from "../utils/trpc";
 import { css } from "goober";
 import { motion } from "framer-motion";
 import { useReducer, useRef } from "react";
-import PlayingCard from "../components/PlayingCard/PlayingCard";
-import PlayingField from "../components/PlayingField/PlayingField";
-import { PlayingCards } from "../types/state";
-
-type GameState = {
-  playedCards: PlayingCards;
-  inHand: PlayingCards;
-};
-const initialGameState: GameState = {
-  playedCards: [],
-  inHand: [{ value: 1 }, { value: 2 }, { value: 3 }],
-};
-
-enum GameStateActionKinds {
-  PlayCard = "PLAY_CARD",
-}
-
-type GameStateActions = {
-  type: GameStateActionKinds;
-  payload: GameState;
-};
-
-function reducer(state: GameState, action: GameStateActions): GameState {
-  switch (action.type) {
-    case "PLAY_CARD":
-      return handlePlayCard(state, action);
-
-    default:
-      return state;
-  }
-}
-
-function handlePlayCard(
-  state: GameState,
-  {
-    payload: { inHand, playedCards },
-  }: Extract<GameStateActions, { type: GameStateActionKinds.PlayCard }>
-): GameState {
-  return state;
-}
+import GameEditor from "../components/GameEditor/GameEditor";
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
-
-  const [gameState, dispatch] = useReducer(reducer, initialGameState);
 
   return (
     <>
@@ -64,7 +23,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="">
         <div className="min-h-screen bg-[url('/space-bg.webp')] bg-cover bg-no-repeat">
-          <Hand cards={gameState.inHand} />
+          <GameEditor />
         </div>
       </main>
     </>
@@ -72,51 +31,6 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-interface Props {
-  cards: Array<Parameters<typeof PlayingCard>[0]>;
-}
-
-function Hand({ cards, ...otherProps }: Props) {
-  const playingField = useRef<HTMLDivElement | null>(null);
-
-  console.log("playingField", playingField.current);
-
-  const x = playingField ? playingField.current?.offsetLeft : 300;
-  const y = playingField ? playingField.current?.offsetTop : 300;
-  console.log({ x, y });
-  return (
-    <>
-      <div className="h-48 w-48"></div>
-      <div {...otherProps} className={styles.hand}>
-        {cards.map((card, index) => (
-          <motion.div
-            key={index}
-            className={styles.card}
-            whileHover={{
-              translateY: -24,
-            }}
-            initial={{ opacity: 0, x: 0, y: 448 / 2 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 2 }}
-            drag
-            dragSnapToOrigin
-            onDrop={(e) => console.log(e)}
-            onDragEnd={(e) => console.log(e)} // dispatch action to remove card from hand
-            // add onExit animation to hover onto middle pile
-          >
-            <PlayingCard value={card.value} />
-          </motion.div>
-        ))}
-      </div>
-      <PlayingField ref={playingField} playedCards={} />
-    </>
-  );
-}
-
-const styles = {
-  hand: css({ display: "flex" }),
-  card: css({}),
-};
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
 

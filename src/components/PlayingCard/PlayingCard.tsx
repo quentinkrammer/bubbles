@@ -1,7 +1,6 @@
-import { forwardRef, ReactNode } from "react";
-import { PlayingCard } from "../../types/state";
+import { PlayingCard as Card } from "../../types/state";
 
-interface Props extends PlayingCard {}
+interface Props extends Card {}
 
 function PlayingCard({ value }: Props) {
   return (

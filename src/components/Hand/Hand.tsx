@@ -1,25 +1,27 @@
 import { motion } from "framer-motion";
 import { css } from "goober";
-import { useRef } from "react";
+import { MutableRefObject } from "react";
 import { PlayingCards } from "../../types/state";
 import PlayingCard from "../PlayingCard/PlayingCard";
-import CardsInPlay from "../CardsInPlay/CardsInPlay";
+import { MouseEvent } from "react";
 
 interface Props {
   cards: PlayingCards;
+  cardsInPlayRef: MutableRefObject<HTMLDivElement | null>;
+  onDoubleClick?: (e: MouseEvent<HTMLDivElement>) => void;
 }
 
-export default function Hand({ cards, ...otherProps }: Props) {
-  const playingField = useRef<HTMLDivElement | null>(null);
-
-  console.log("playingField", playingField.current);
-
-  const x = playingField ? playingField.current?.offsetLeft : 300;
-  const y = playingField ? playingField.current?.offsetTop : 300;
+export default function Hand({
+  cards,
+  cardsInPlayRef,
+  onDoubleClick,
+  ...otherProps
+}: Props) {
+  //   const x = cardsInPlayRef ? cardsInPlayRef.current?.offsetLeft : 300;
+  //   const y = cardsInPlayRef ? cardsInPlayRef.current?.offsetTop : 300;
 
   return (
     <>
-      <div className="h-48 w-48"></div>
       <div {...otherProps} className={styles.hand}>
         {cards.map((card, index) => (
           <motion.div
@@ -33,9 +35,10 @@ export default function Hand({ cards, ...otherProps }: Props) {
             transition={{ duration: 2 }}
             drag
             dragSnapToOrigin
-            onDrop={(e) => console.log(e)}
+            onDrop={(e) => console.log(e)} // when does his trigger?
             onDragEnd={(e) => console.log(e)} // dispatch action to remove card from hand
             // add onExit animation to hover onto middle pile
+            onDoubleClick={onDoubleClick}
           >
             <PlayingCard value={card.value} />
           </motion.div>

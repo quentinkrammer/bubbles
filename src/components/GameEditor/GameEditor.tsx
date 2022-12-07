@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useRef } from "react";
 import { BaseProps } from "../../types/baseProps";
 import CardsInPlay from "../CardsInPlay/CardsInPlay";
 import Hand from "../Hand/Hand";
@@ -16,10 +16,12 @@ export default function GameEditor({ ...otherProps }: Props) {
     initialGameState
   );
 
+  const cardsInPlay = useRef<HTMLDivElement | null>(null);
+
   return (
     <div {...otherProps}>
-      <CardsInPlay cards={inPlay} />
-      <Hand cards={inHand} />
+      <CardsInPlay cards={inPlay} ref={cardsInPlay} />
+      <Hand cards={inHand} cardsInPlayRef={cardsInPlay} />
     </div>
   );
 }

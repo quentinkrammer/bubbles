@@ -5,12 +5,52 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 import { css } from "goober";
 import { motion } from "framer-motion";
-import { forwardRef, LegacyRef, MutableRefObject, useRef } from "react";
+import { useReducer, useRef } from "react";
 import PlayingCard from "../components/PlayingCard/PlayingCard";
 import PlayingField from "../components/PlayingField/PlayingField";
+import { PlayingCards } from "../types/state";
+
+type GameState = {
+  playedCards: PlayingCards;
+  inHand: PlayingCards;
+};
+const initialGameState: GameState = {
+  playedCards: [],
+  inHand: [{ value: 1 }, { value: 2 }, { value: 3 }],
+};
+
+enum GameStateActionKinds {
+  PlayCard = "PLAY_CARD",
+}
+
+type GameStateActions = {
+  type: GameStateActionKinds;
+  payload: GameState;
+};
+
+function reducer(state: GameState, action: GameStateActions): GameState {
+  switch (action.type) {
+    case "PLAY_CARD":
+      return handlePlayCard(state, action);
+
+    default:
+      return state;
+  }
+}
+
+function handlePlayCard(
+  state: GameState,
+  {
+    payload: { inHand, playedCards },
+  }: Extract<GameStateActions, { type: GameStateActionKinds.PlayCard }>
+): GameState {
+  return state;
+}
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+
+  const [gameState, dispatch] = useReducer(reducer, initialGameState);
 
   return (
     <>
@@ -24,7 +64,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="">
         <div className="min-h-screen bg-[url('/space-bg.webp')] bg-cover bg-no-repeat">
-          <Hand cards={[{ value: 1 }, { value: 2 }, { value: 3 }]} />
+          <Hand cards={gameState.inHand} />
         </div>
       </main>
     </>
@@ -35,6 +75,7 @@ export default Home;
 interface Props {
   cards: Array<Parameters<typeof PlayingCard>[0]>;
 }
+
 function Hand({ cards, ...otherProps }: Props) {
   const playingField = useRef<HTMLDivElement | null>(null);
 
@@ -67,7 +108,7 @@ function Hand({ cards, ...otherProps }: Props) {
           </motion.div>
         ))}
       </div>
-      <PlayingField ref={playingField} />
+      <PlayingField ref={playingField} playedCards={} />
     </>
   );
 }
